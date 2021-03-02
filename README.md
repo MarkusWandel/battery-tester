@@ -1,4 +1,5 @@
 # NiMH AA Battery Tester
+![Photo of the tester](doc/pix/main_photo.jpg)
 [Manual](doc/manual.md) &emsp; [Schematic](schematic/battery-tester.pdf) &emsp; [Source Code](src/battery-tester.ino)
 ## Intro
 We have way too many rechargeable batteries around the house.  And while these should be carefully used in matched sets, labeled and tracked, none of this happens in real life.  You just grab some of the same brand, slam them into the 1-hour charger and get the impatient child's toy going again.
