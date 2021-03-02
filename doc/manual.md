@@ -1,6 +1,14 @@
 # NiMH AA Battery Tester Manual
 # Usage
-Do not power device using USB and wall adapter at the same time.  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
+They say a picture is a thousand words, so here's one:
+
+![Operation Flowchart](pix/flowchart.jpg)
+
+Additional notes:
+
+- Do not power device using USB and wall adapter at the same time.  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
+- Do not insert batteries after the device has powered up.  If you were to get one backwards, it could burn out the Arduino, since backwards battery test is only done right after powerup.
+- A discharged battery (less than 1.0V into 3.3 ohm load) will show the same as an empty socket
 
 # How it works
 ## Discharge Circuit
@@ -129,7 +137,7 @@ First of all, test the high-pincount parts on a breadboard before soldering them
 
 I also found after installation that one of the relay module channels didn't work.  It turns out that the LED indicators on there are needed to function, and one of them was damaged.  The small resistor added to bypass that can be seen in the photos.  But if I'd noticed earlier, the dead channel would have been the unused 8th relay (as it was in my breadboard tests).
 
-Battery holders mounted.  I routed slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.
+Battery holders mounted.  I routed slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.  Considering how I want to control stray resistance here, the very heavy duty tabs (take a real effort to bend and real force to insert the batteries) are just the ticket here.
 
 Note the very heavy ground wire.  I passed it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: a small fraction of a milli-ohm).
 
@@ -163,13 +171,13 @@ What could affect the measurement is the ground connection to the Arduino.  Both
 
 ![Assembly Photo 8](pix/assembly8.jpg)
 
-Top side component view.  This is already after the first overnight test run.  The reverse polarity circuit is still missing.
+Top side component view.  This is already after the first overnight test run.  The reverse polarity circuit is still missing.  The components above the Arduino are the 2.5V analog reference.
 
 ![Assembly Photo 9](pix/assembly9.jpg)
 
 Bottom wiring, minus the reverse polarity circuit.  I used my old wirewrap stuff to make connections where practical.  The alternative would have been more soldering.  As a side effect, if the Arduino is ever destroyed, this makes it at least vaguely possible to disconnect and replace it.
 
-Note that the power cord does not have a connector.  If the wrong kind of power adapter were to be plugged in the Arduino would be burned out, since the power supply's regulated 5V power the AVR328 CPU directly.  This the power adapter that works for this stays permanently associated with it.
+Note that the power cord does not have a connector.  If the wrong kind of power adapter were to be plugged in the Arduino would be burned out, since the power supply's regulated 5V powers the AVR328 CPU directly.  Thus the power adapter that works for this stays permanently associated with it.
 
 ![Assembly Photo 10](pix/assembly10.jpg)
 
@@ -182,4 +190,4 @@ The power resistors get fairly hot.  They are in two groups; first all the charg
 
 Maybe use a bigger display.  The 1.3" one clearly communicates its information but at my age, at least, it's squinty.
 
-WIFI... Just kidding.  This device does not need internet access!  It's a self-contained appliance. If you want a record of what it measured, take a picture with your phone - and be sure to include the battery holders so you can record what batteries produced the readings.  If you need data logging, add some print statements and record the discharge run using the USB/serial connection.
+Wifi... Just kidding.  This device does not need internet access!  It's a self-contained appliance. If you want a record of what it measured, take a picture with your phone - and be sure to include the battery holders so you can record what batteries produced the readings.  If you need data logging, add some print statements and record the discharge run using the USB/serial connection.
