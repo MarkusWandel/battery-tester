@@ -7,7 +7,7 @@ They say a picture is worth a thousand words, so here's one:
 Additional notes:
 
 - **Do not power device using USB and wall adapter at the same time.**  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
-- **Do not insert batteries after the device has powered up.**  If you were to get one backwards, it could burn out the Arduino, since backward battery test is only done right after powerup.
+- **Do not insert batteries while the device is powered up.**  If you were to get one backwards, it could burn out the Arduino, since backward battery test is only done right after powerup.
 - A discharged battery (less than 1.0V into 3.3 ohm load) will show the same as an empty socket
 
 # How it works
@@ -22,9 +22,9 @@ If there is extra resistance in the ground connection to the Arduino, then the p
 
 The entire discharge loop needs to be as low resistance as possible, so the load resistance on the battery really is 3.3 ohms and not more.  The firmware in the Arduino uses 3.3 ohms when converting voltage to current for measuring milliamp hours and watt hours.
 
-The only connection where resistance doesn't matter much, and can be done with a thin wire, is the labeled one.  This is because the analog input pins on the Arduino draw only an immeasurably small amount of current.
+The only connection where resistance doesn't matter much, and that can be done with a thin wire, is the labeled one.  This is because the analog input pins on the Arduino draw only an immeasurably small amount of current.
 
-A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors burn 6*1.2*1.2/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time.
+A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors burn 6\*1.2\*1.2/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time.
 ## Reference Voltage for A/D conversion
 The Arduino's analog-digital converter outputs a value of 0 if the analog input is at ground level, and a value of 1023 if the analog input is at the analog reference level.  Without anything connected to the AREF pin this defaults to the supply voltage.  However, the supply voltage isn't necessarily very precise, only having to be within +/- 10% of 5V.  For any kind of exact measurement, a more precisely regulated analog reference voltage is required.
 
@@ -32,7 +32,7 @@ The Arduino's analog-digital converter outputs a value of 0 if the analog input 
 
 The device chosen is a TL431.  In the configuration here, it produces 2.5V.  The 2.2K ohm resistor limits the current through the device.  The analog readings were still noisy with this configuration, so the 10 microfarad capacitor was added.
 
-Ideally the reference voltage should be just higher than the highest voltage expected to be measured; in this case, about 1.5V.  However the TL431 doesn't go any lower than 2.5V.  Thus part of the analog/digital converter resolution is wasted; a typical discharge voltage of a NiMH cell of 1.2 volts will only produce 1.2/2.5*1023 = approximately 491 on the analog-digital converter output, giving a resolution of 1.2V/491 = 2.44mV.  Two resistors as a voltage divider between the TL431 and the filter capacitor could be added to address this.
+Ideally the reference voltage should be just higher than the highest voltage expected to be measured; in this case, about 1.5V.  However the TL431 doesn't go any lower than 2.5V.  Thus part of the analog/digital converter resolution is wasted; a typical discharge voltage of a NiMH cell of 1.2 volts will only produce 1.2/2.5\*1023 = approximately 491 on the analog-digital converter output, giving a resolution of 1.2V/491 = 2.44mV.  Two resistors as a voltage divider between the TL431 and the filter capacitor could be added to address this.
 
 In actual fact, the reading resolution is higher, because each reading is taken 1000 times and averaged to smooth out analog-digital conversion noise.  For "inbetween steps" values it is likely that some are at the higher step and some at the lower step, and the ratio of these readings will determine the final result.
 ## Trickle Charging
@@ -48,7 +48,7 @@ The charge relay is shown in the "active" position and the battery relay in the 
 
 The 22 ohm resistance is chosen so about 160mA of charging current flows: 5 volt supply minus approximately 1.5 volts on a battery being charged, current = 3.5V/22ohm = 159mA.  Since it is safe to trickle charge a battery at 1/10 its rated capacity, this is good for batteries down to 1590mAh.  As long as trickle charging isn't for too long, it can be used on smaller capacity batteries too, in my case, on some cheap 1350mAh ones.
 
-The charging circuitry is wasteful in that (5-1.5)/5 = 70% of the charge energy is just turned into heat by the 22 ohm resistor, for about (5-1.5V)*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch comfortably on my device at 6*0.56 = 3.36W of heat being generated continuously.
+The charging circuitry is wasteful in that (5-1.5)/5 = 70% of the charge energy is just turned into heat by the 22 ohm resistor, for about (5-1.5V)\*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch comfortably on my device at 6\*0.56 = 3.36W of heat being generated continuously.
 ## Reverse Polarity Detection
 To obtain precise readings, the batteries are connected directly to the Arduino's analog input pins when in discharge mode.  If this were to occur with a battery accidentally inserted backwards, the analog input pin would instantly burn out.
 
@@ -86,9 +86,9 @@ The TL431 device is not instrument grade.  However in this application it produc
 ### Conversion of ADC reading to Millivolts
 In the firmware, the following conversion is used on the sum of 1000 analog readings:
 
-&emsp; millivolts = (100*adc+20165) / 40330
+&emsp; millivolts = (100\*adc+20165) / 40330
 
-The divisor of 403.3 was experimentally determined to give the best accuracy.  The conversion is done like this to make integer arithmetic work.  Doing "10*adc/4033" takes care of the decimal place, and adding half the divisor takes care of rounding, only that wouldn't be an integer, so I multiply by 10 again just so the rounding addend is an integer.  Multiplying by 2 would have been sufficient, but this is more readable.
+The divisor of 403.3 was experimentally determined to give the best accuracy.  The conversion is done like this to make integer arithmetic work.  Doing "10\*adc/4033" takes care of the decimal place, and adding half the divisor takes care of rounding, only that wouldn't be an integer, so I multiply by 10 again just so the rounding addend is an integer.  Multiplying by 2 would have been sufficient, but this is more readable.
 
 This was calibrated by not yet connecting one of the 22 ohm load resistors, and connecting a potentiometer between ground, +5V and the positive battery terminal.  This allowed me to dial in various voltages and observe the millivolt variable continously (via a print loop to the serial monitor).
 
