@@ -19,6 +19,8 @@ The Arduino's analog-digital converter outputs a value of 0 if the analog input 
 ![Analog Reference Circuit](pix/aref.jpg)
 
 The device chosen is a TL431.  In the configuration here, it produces 2.5V.  The 2.2K ohm resistor limits the current through the device.  The analog readings were still noisy with this configuration, so the 10 microfarad capacitor was added.
+
+Ideally the reference voltage should be just higher than the highest voltage expected to be measured; in this case, about 1.5V.  However the TL431 doesn't go any lower than 2.5V.  Thus part of the analog/digital converter resolution is wasted; a typical discharge voltage of a NiMH cell of 1.2 volts will only produce 1.2/2.5*1023 = approximately 491 on the analog-digital converter output, giving a resolution of 1.2V/491 = 2.44mV.  Two resistors as a voltage divider between the TL431 and the filter capacitor could be added to address this.
 ## Trickle Charging
 A 1-hour fast charger has to terminate the charge when the battery is full, else the charge current is all turned into heat and the battery is damaged.  Charge termination for NiMH batteries is tricky.  Thus it can't be assumed that the 1-hour charger will completely charge the battery.
 
