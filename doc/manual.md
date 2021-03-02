@@ -10,7 +10,7 @@ This battery tester includes a trickle topup, on the assumption that a fast char
 
 # Construction
 ## Materials
-The list of electronic materials is at the end of the [Schematic](schematic/battery-tester.pdf).
+The list of electronic materials is at the end of the [Schematic](../schematic/battery-tester.pdf).
 Other materials used to build the device as shown in the photo were:
 
 - 12x18cm proto board with copper pads
