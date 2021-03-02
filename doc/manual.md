@@ -1,5 +1,7 @@
 # NiMH AA Battery Tester Manual
 # Usage
+Do not power device using USB and wall adapter at the same time.  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
+
 # How it works
 ## Discharge Circuit
 This is the important circuit of the tester.
@@ -62,12 +64,12 @@ As mentioned earlier, heavy gauge wire is used where stray resistance would thro
 
 The battery holders are of a type that has very sturdy metal contact tabs.
 ### Load Resistor Accuracy
-The load resistors are supposed to be 3.3 ohms.  The Arduino needs this value for voltage-current convresions.  Are the resistors really 3.3 ohms?  It's hard to measure such a low resistance with hobbyist gear.
+The load resistors are supposed to be 3.3 ohms.  The Arduino needs this value for voltage-current conversions.  Are the resistors really 3.3 ohms?  It's hard to measure such a low resistance with hobbyist gear.
 
-Instead, on the finished device, I powered one of the battery terminals from an adjustable power supply, with multimeters in series (to measure current) and parallel to the battery contacts (to measure voltage).  To the extent the multimeters' resolution allowed me to measure it, I saw a total resistance of 3.3 ohms plus/minus about 5%.
+Instead, on the finished device, I powered one of the battery terminals from an adjustable power supply, with multimeters in series (to measure current) and parallel to the battery contacts (to measure voltage).  To the extent the multimeters' resolution allowed me to measure it, I saw a total resistance of 3.3 ohms +/- about 5%.
 
 I did not test whether the resistors heating up significantly affects their resistance.
-### Differences between Channels
+### Consistency between Channels
 Even more important than the accuracy of the load resistors is that the channels all give consistent readings.  Otherwise a battery might appear stronger than another, just because it is in the more favourable battery holder.
 
 Aside from ensuring that all the analog input pins on the Arduino read the same for the same voltage, which I did not check, and really controlling stray resistance in the wiring, the main task was to ensure the resistors are all the same.  This was done by connecting all six of them in series to a power supply before installation, and measuring the voltage across each with a multimeter.  To the extent the multimeter could tell (3 signifcant digits) they all had the same voltage drop.
@@ -80,11 +82,11 @@ In the firmware, the following conversion is used on the sum of 1000 analog read
 
 The divisor of 403.3 was experimentally determined to give the best accuracy.  The conversion is done like this to make integer arithmetic work.  Doing "10*adc/4033" takes care of the decimal place, and adding half the divisor takes care of rounding, only that wouldn't be an integer, so I multiply by 10 again just so the rounding addend is an integer.  Multiplying by 2 would have been sufficient, but this is more readable.
 
-This was "calibrated" by not yet connecting one of the 22 ohm load resistors, and connecting a potentiometer between ground, +5V and the positive battery terminal.  This allowed me to dial in various voltages and observe the millivolt variable continously (via a print loop to the serial monitor).
+This was calibrated by not yet connecting one of the 22 ohm load resistors, and connecting a potentiometer between ground, +5V and the positive battery terminal.  This allowed me to dial in various voltages and observe the millivolt variable continously (via a print loop to the serial monitor).
 
 In practice, checking battery voltage with a multimeter and comparing to the voltage shown on the device (with two decimal places) I find the accuracy to be within +/- 1%.
 ### Electrical and A/D Converter Noise
-The main method to deal with this is to simply read each voltage 1000 times and average.  The 1000 readings are interleaved between channels to space the readings out evenly over most of a second.  It was not determined whether this (having the A/D converter input constantly switching channels) is, in fact, less noisy than doing each batch of 1000 reads separately.
+The main method to deal with this is to simply read each voltage 1000 times and average.  The 1000 readings are interleaved between channels to space the readings out evenly over most of a second.  It was not verified whether this (having the A/D converter input constantly switching channels) is, in fact, less noisy than doing each batch of 1000 reads separately.
 
 The analog reference voltage needed the 10 microfarad filter capacitor in my breadboard test.  I didn't try whether it was still necessary in the final construction with much better ground and shorter interconnects.
 ### Fixed-Point Arithmetic
@@ -94,25 +96,26 @@ The firmware uses only integer, or rather fixed point arithmetic.  If I want vol
 
 Where both Input and Divisor are scaled up enough to make Divisor/2 an integer.  This results in no rounding loss.
 
-In general, operations that lose precision are avoided for the milliamp hour and watt hour accumulators.  Thus dividing by 3.3 to get the current is only done just before displaying the results; the continous accumulation only involves adds and mltiplies.  The exception to this is the initial analog reading to millivolt conversion; it would be too confusing to defer this.
+In general, operations that lose precision are avoided for the milliamp hour and watt hour accumulators.  Thus dividing by 3.3 for the load resistance is only done just before displaying the results; the continous accumulation only involves adds and multiplies.  The exception to this is the initial analog reading to millivolt conversion; it would be too confusing to defer this.
 # Construction
 ## Materials
 The list of electronic materials is at the end of the [Schematic](../schematic/battery-tester.pdf).
 Other materials used to build the device as shown in the photos were:
 
-- 18x12cm prototyping board with copper pads
-- about 80cm of 14-gauge copper wire (obtain by stripping the insulated part of normal house wiring - the bare coppper earth wire is a lesser gauge)
-- about 30cm of foam double-sided adhesive tape
-- electrical tape
-- some insulated hookup wire (from a stripped twisted pair cable such as used for ethernet)
-- wirewrap wire
-- solder
+- 18x12cm Prototyping board with copper pads
+- About 80cm of 14-gauge copper wire (obtain by stripping the insulated part of normal house wiring - the bare coppper earth wire is a lesser gauge)
+- About 30cm of foam double-sided adhesive tape
+- Electrical tape
+- Insulated hookup wire (from a stripped twisted pair cable such as used for ethernet)
+- Wirewrap wire (optional)
+- Solder
 
 ## Tools
 Tools to construct the device as shown were
 - Good quality temperature regulated soldering iron with a reasonably fine tip
+- Solder sucker or solder wick braid to fix soldering errors
 - Dremel tool with a 1/16" milling bit
-- Wirewrap gun
+- Wirewrap gun (optional)
 - Needlenose pliars
 - Wire cutter
 - Wire stripper
@@ -121,3 +124,62 @@ Tools to construct the device as shown were
 
 ## Method
 Everyone has their own preferred style for a one-off project.  You may enjoy designing a custom printed circuit board, or you may just assemble it using breadboards and jumper wires.  The following just shows how I made mine.
+
+First of all, test the high-pincount parts on a breadboard before soldering them in.  It would be really bad to find that your Arduino has a bad I/O pin, or won't download (note: I had to install the boot loader on mine using the 6-pin connector before I could download to it using USB).  Have it booted up and showing stuff on the LCD before committing the parts.  This is also a good time to check the A/D converter to millivolt conversion and adjust the 403.3 divisor as necessary.
+
+I also found after installation that one of the relay module channels didn't work.  It turns out that the LED indicators on there are needed to function, and one of them was damaged.  The small resistor added to bypass that can be seen in the photos.  But if I'd noticed earlier, the dead channel would have been the unused 8th relay (as it was in my breadboard tests).
+
+Battery holders mounted.  I routed slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.
+
+Note the very heavy ground wire.  I passed it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: A small fraction of a milli-ohm).
+
+![Assembly Photo 1](pix/assembly1.jpg)
+
+Next, cover the part where the relay modules will go with two layers of electrical tape.
+
+![Assembly Photo 2](pix/assembly2.jpg)
+
+Mount the relay banks (one bank of eight would be better) using two layers of double-sided adhesive foam tape.  They won't come off due to the heavy wires that will be added.  Here we already have the connections to the positive battery terminals.
+
+![Assembly Photo 3](pix/assembly3.jpg)
+
+The 3.3 ohm load resistors are mounted.
+
+![Assembly Photo 4](pix/assembly4.jpg)
+
+And connected to the "normally open" terminals on the relays.
+
+![Assembly Photo 5](pix/assembly5.jpg)
+
+The 22 ohm charge resistors are mounted.
+
+![Assembly Photo 6](pix/assembly6.jpg)
+
+And connected to the "normally closed" relay terminals at one end, and the charge diodes at the other end.  The common end of the charge diodes goes to the "normally open" terminal on the charge relay.  Heavy hookup wire is used here, but not the insane overkill 14 gauge wire, since any wire resistance here doesn't affect the measurement.
+
+![Assembly Photo 7](pix/assembly7.jpg)
+
+What could affect the measurement is the ground connection to the Arduino.  Both ground pins are used.  There is no need for the heavy wire here, because the wire runs are very short, and the Arduino and its connected gadgets don't use very much power.
+
+![Assembly Photo 8](pix/assembly8.jpg)
+
+Top side component view.  This is already after the first overnight test run.  The reverse polarity circuit is still missing.
+
+![Assembly Photo 9](pix/assembly9.jpg)
+
+Bottom wiring, minus the reverse polarity circuit.  I used my old wirewrap stuff to make connections where practical.  The alternative would have been more soldering.  As a side effect, if the Arduino is ever destroyed, this makes it at least vaguely possible to disconnect and replace it.
+
+Note that the power cord does not have a connector.  If the wrong kind of power adapter were to be plugged in the Arduino would be burned out, since the power supply's regulated 5V power the AVR328 CPU directly.  This the power adapter that works for this stays permanently associated with it.
+
+![Assembly Photo 10](pix/assembly110.jpg)
+
+## What I Would Do Differently Next Time
+The power cord comes out at the bottom of the device.  It was routed from the top and fastened down while the board was upside-down.  Whoops.
+
+The power resistors get fairly hot.  They are in two groups; first all the charge resistors and then all the discharge ones.  It would make more sense to interleave them to spread the heat out more, since only one or the other is active at a time.  Also the leads could be left a bit longer to elevate them off the prototyping board for better air circulation.
+
+8 Relay Bank - I built it with two 4 relay modules because that's what I had on hand.  But using one 8 relay module would save a little bit of space and two interconnect wires.
+
+Maybe use a bigger display.  The 1.3" one clearly communicates its information but at my age, at least, it's squinty.
+
+WIFI... Just kidding.  This device does not need internet access!  It's a self-contained appliance. If you want a record of what it measured, take a picture with your phone - and be sure to include the battery holders so you can record what batteries produced the readings.  If you need data logging, add some print statements and record the discharge run using the USB/serial connection.
