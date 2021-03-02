@@ -131,7 +131,7 @@ I also found after installation that one of the relay module channels didn't wor
 
 Battery holders mounted.  I routed slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.
 
-Note the very heavy ground wire.  I passed it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: A small fraction of a milli-ohm).
+Note the very heavy ground wire.  I passed it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: a small fraction of a milli-ohm).
 
 ![Assembly Photo 1](pix/assembly1.jpg)
 
@@ -139,7 +139,7 @@ Next, cover the part where the relay modules will go with two layers of electric
 
 ![Assembly Photo 2](pix/assembly2.jpg)
 
-Mount the relay banks (one bank of eight would be better) using two layers of double-sided adhesive foam tape.  They won't come off due to the heavy wires that will be added.  Here we already have the connections to the positive battery terminals.
+Mount the relay banks (one bank of eight would be better) using two layers of double-sided adhesive foam tape.  They won't come off due to the stiffness of the heavy wires that will be added.  Here we already have the connections to the positive battery terminals.
 
 ![Assembly Photo 3](pix/assembly3.jpg)
 
@@ -147,7 +147,7 @@ The 3.3 ohm load resistors are mounted.
 
 ![Assembly Photo 4](pix/assembly4.jpg)
 
-And connected to the "normally open" terminals on the relays.
+And connected to the "normally open" terminals on the relays at one end, and the ground wire at the other.
 
 ![Assembly Photo 5](pix/assembly5.jpg)
 
@@ -171,7 +171,7 @@ Bottom wiring, minus the reverse polarity circuit.  I used my old wirewrap stuff
 
 Note that the power cord does not have a connector.  If the wrong kind of power adapter were to be plugged in the Arduino would be burned out, since the power supply's regulated 5V power the AVR328 CPU directly.  This the power adapter that works for this stays permanently associated with it.
 
-![Assembly Photo 10](pix/assembly110.jpg)
+![Assembly Photo 10](pix/assembly10.jpg)
 
 ## What I Would Do Differently Next Time
 The power cord comes out at the bottom of the device.  It was routed from the top and fastened down while the board was upside-down.  Whoops.
