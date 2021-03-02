@@ -233,7 +233,6 @@ void setup() {
   start_time = millis();
 }
 
-
 // Software debounce and timer for the button (long vs. short press)
 int prev_button_state = 0;
 int button_state = 1;
