@@ -1,13 +1,13 @@
 # NiMH AA Battery Tester Manual
 # Usage
-They say a picture is a thousand words, so here's one:
+They say a picture is worth a thousand words, so here's one:
 
 ![Operation Flowchart](pix/flowchart.jpg)
 
 Additional notes:
 
-- Do not power device using USB and wall adapter at the same time.  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
-- Do not insert batteries after the device has powered up.  If you were to get one backwards, it could burn out the Arduino, since backwards battery test is only done right after powerup.
+- **Do not power device using USB and wall adapter at the same time.**  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
+- **Do not insert batteries after the device has powered up.**  If you were to get one backwards, it could burn out the Arduino, since backward battery test is only done right after powerup.
 - A discharged battery (less than 1.0V into 3.3 ohm load) will show the same as an empty socket
 
 # How it works
@@ -114,7 +114,7 @@ Other materials used to build the device as shown in the photos were:
 - About 80cm of 14-gauge copper wire (obtain by stripping the insulated part of normal house wiring - the bare coppper earth wire is a lesser gauge)
 - About 30cm of foam double-sided adhesive tape
 - Electrical tape
-- Insulated hookup wire (from a stripped twisted pair cable such as used for ethernet)
+- Insulated hookup wire (from a stripped twisted pair cable such as Cat5)
 - Wirewrap wire (optional)
 - Solder
 
@@ -122,9 +122,9 @@ Other materials used to build the device as shown in the photos were:
 Tools to construct the device as shown were
 - Good quality temperature regulated soldering iron with a reasonably fine tip
 - Solder sucker or solder wick braid to fix soldering errors
-- Dremel tool with a 1/16" milling bit
+- Dremel tool with a 1/16" milling bit (sort of optional - won't look as good if you improvise with a drill)
 - Wirewrap gun (optional)
-- Needlenose pliars
+- Needlenose pliers
 - Wire cutter
 - Wire stripper
 - Scissors
@@ -133,13 +133,13 @@ Tools to construct the device as shown were
 ## Method
 Everyone has their own preferred style for a one-off project.  You may enjoy designing a custom printed circuit board, or you may just assemble it using breadboards and jumper wires.  The following just shows how I made mine.
 
-First of all, test the high-pincount parts on a breadboard before soldering them in.  It would be really bad to find that your Arduino has a bad I/O pin, or won't download (note: I had to install the boot loader on mine using the 6-pin connector before I could download to it using USB).  Have it booted up and showing stuff on the LCD before committing the parts.  This is also a good time to check the A/D converter to millivolt conversion and adjust the 403.3 divisor as necessary.
+First of all, test the high-pincount parts on a breadboard before soldering them in.  It would be really bad to find that your Arduino has a bad I/O pin, or won't download (note: I had to install the boot loader on mine using the 6-pin connector before I could download to it using USB).  Have it booted up and showing stuff on the LCD before committing the parts.  This is also a good time to check the A/D reading to millivolt conversion and adjust the 403.3 divisor as necessary.
 
 I also found after installation that one of the relay module channels didn't work.  It turns out that the LED indicators on there are needed to function, and one of them was damaged.  The small resistor added to bypass that can be seen in the photos.  But if I'd noticed earlier, the dead channel would have been the unused 8th relay (as it was in my breadboard tests).
 
 Battery holders mounted.  I routed slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.  Considering how I want to control stray resistance here, the very heavy duty tabs (take a real effort to bend and real force to insert the batteries) are just the ticket here.
 
-Note the very heavy ground wire.  I passed it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: a small fraction of a milli-ohm).
+Note the very heavy ground wire.  I ran it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: a small fraction of a milli-ohm).
 
 ![Assembly Photo 1](pix/assembly1.jpg)
 
