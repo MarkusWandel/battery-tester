@@ -33,12 +33,12 @@ Every connection shown, except as noted, is made of very heavy (14 gauge copper)
 
 The discharge loop wiring needs to be as low resistance as possible, so the load resistance on the battery really is 3.3 ohms and not more.  The firmware in the Arduino uses 3.3 ohms when converting voltage to current for displaying milliamp hours and watt hours.
 
-The analog input pins on the Arduino draw only an immeasurably small amount of current so a thin wire can be used to hook them up.
+The analog input pins on the Arduino draw immeasurably small current so a thin wire can be used to hook them up.
 
 A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors burn 6\*1.2\*1.2/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time and wirewound power resistors are built to take the heat.
 
 ## Reference Voltage for A/D conversion
-The Arduino's analog-digital converter outputs a value of 0 if the analog input is at ground level, and a value of 1023 if the analog input is at the analog reference level.  Without anything connected to the AREF pin this defaults to the supply voltage.  However, the supply voltage isn't necessarily very precise, only having to be within +/- 10% of 5V.  For any kind of exact measurement, a more precisely regulated analog reference voltage is required.
+The Arduino's analog-digital converter outputs a value of 0 if the analog input is at ground level, and a value of 1023 if the analog input is at the analog reference level.  Without anything connected to the AREF pin this defaults to the supply voltage.  However, the supply voltage isn't necessarily very precise, only having to be within +/- 10% of 5V.  For exact measurement, a precisely regulated analog reference voltage is required.
 
 ![Analog Reference Circuit](pix/aref.jpg)
 
@@ -46,27 +46,27 @@ A TL431 is used as it is commonly found in switching power supplies.  As connect
 
 The analog resolution is about 2.44mV per A/D converter step.  This is adequate for this application; however with a lower reference voltage (1.6V) the resolution would be higher.
 ## Trickle Charging
-A fast charger can't be guaranteed to top up the batteries to exactly 100% full.  Trickle charging can.
+A fast charger can't guarantee to top up the batteries to exactly 100% full.  Trickle charging can.
 
-Trickle charging is defined as a rate of C/10 or less, where C is the capacity of the battery.  So for example a 2800mAh battery can be trickle charged at 280mA.  Trickle charging does not need careful charge termination and can be left on overnight.  Most cheap overnight chargers work this way.
+Trickle charging is defined as a rate of C/10 or less, where C is the capacity of the battery.  So for example a 2800mAh battery can be trickle charged at 280mA.  Trickle charging does not need to stop at 100% full and can be left on longer.  Most cheap overnight chargers work this way.
 
-The trickle charge in this tester is meant to top up an already charged battery, not charge it from empty.
+The trickle charge in this tester is meant to top up a fast-charged battery, not charge it from empty.
 
 ![Charging Circuit](pix/charge.jpg)
 
 The charge relay is shown in the "active" position and the battery relay in the "inactive" position.  Current flows through the diode and the 22 ohm resistor to charge the battery.  The diode exists because otherwise all batteries not being discharged would be connected in parallel.  With the diode, current can only flow "into" the battery, not out of it.
 
-With the 5 volt supply minus approximately 1.5 volts on a battery being charged, the current is 3.5V/22ohm = 159mA.  Batteries of less than 1590mAh capacity can still be topped up, just not for too many hours.
+With the 5 volt supply minus approximately 1.5 volts on a battery being charged, the current is 3.5V/22ohm = 159mA.  Batteries of less than 1590mAh capacity can still be topped up, just not too long.  The 2 or 4 hour topup setting is recommeded in this case.
 
-The charging circuitry is wasteful in that (5-1.5)/5 = 70% of the charge energy is just turned into heat by the 22 ohm resistor, for about (5-1.5V)\*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch at 6\*0.56 = 3.36W of heat being generated continuously and a wirewound resistor is built to take the heat.
+The charging circuitry is wasteful in that 3.5/5 = 70% of the charge energy is just turned into heat by the 22 ohm resistor, for about 3.5V\*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch at 6\*0.56 = 3.36W of heat being generated continuously and a wirewound resistor is built to take the heat.
 ## Reverse Polarity Detection
-To obtain precise readings, the batteries are connected directly to the Arduino's analog input pins when in discharge mode.  If this were to occur with a battery accidentally inserted backwards, the analog input pin would burn out.  The following circuit guards against accidental damage.
+To obtain precise readings, the batteries are connected directly to the Arduino's analog input pins in discharge mode.  If this were to occur with a battery accidentally inserted backwards, the analog input pin would burn out.  The following circuit guards against accidental damage.
 
 ![Polarity Sensing Circuit](pix/polarity.jpg)
 
 Resistor R13 tries to turn on transistor Q1, which then pulls the Arduino's input pin low.  This indicates "OK".
 
-Any installed batteries will draw current away from the transistor's base connection through resistor R14, to try to turn the transistor off.  The exact turnoff voltage depends on the ratio of R13 to R14.  100 ohms was experimentally determined to turn off the transistor at about -16 millivolts on the lowest-voltage battery.
+Any installed batteries will draw current away from the transistor's base connection through resistor R14, to try to turn the transistor off and the Arduino input on, which indicates "Danger, do not turn on discharge relays".  The threshold voltage depends on the ratio of R13 to R14.  100 ohms was experimentally determined to turn off the transistor at about -16 millivolts on the lowest-voltage battery.
 ## I2C Voltage Conversion
 The Arduino runs on 5V, whereas the LCD runs at 3.3V.  While it is possible to directly wire SPI between incompatbile voltage levels, a programming error (drive the Arduino pin to logic high as opposed to letting it be pulled to 3.3V via a pullup resistor) could damage the LCD.
 
