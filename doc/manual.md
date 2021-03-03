@@ -24,7 +24,7 @@ It was for science!  From new batteries directly to the battery recycle bin.  Tw
 - Private label batteries are about the same, at least these two
 - An alkaline battery has too high an ESR (equivalent series resistance) to efficiently yield its energy into 3.3 ohms.
 
-The milliamp hour tallying code wasn't as accurate at this point.  Still, according to [https://en.wikipedia.org/wiki/Alkaline_battery#Voltage](Wikipedia) at significant load an alkaline cell hits 1.0V with still about 20% energy remaining, and [https://en.wikipedia.org/wiki/AA_battery#Comparison](elsewhere on Wikipedia) it says that the rated capacity of an alkaline AA, 1800-2850mAh (presumably cheap private label ones are at the low end) is yielded at a 50mA discharge rate.  Anyhow it's clear that for high current loads, NiMH rechargeables work much better.
+The milliamp hour tallying code wasn't as accurate at this point.  Still, according to [Wikipedia](https://en.wikipedia.org/wiki/Alkaline_battery#Voltage) at significant load an alkaline cell hits 1.0V with still about 20% energy remaining, and [elsewhere on Wikipedia](https://en.wikipedia.org/wiki/AA_battery#Comparison] it says that the rated capacity of an alkaline AA, 1800-2850mAh (presumably cheap private label ones are at the low end) is yielded at a 50mA discharge rate.  Anyhow it's clear that for high current loads, NiMH rechargeables work much better.
 
 # How it works
 ## Discharge Circuit
