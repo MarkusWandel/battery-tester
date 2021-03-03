@@ -9,6 +9,22 @@ Additional notes:
 - **Do not power device using USB and wall adapter at the same time.**  This could cause problems since both would drive the same 5V rail.  The device will work on USB power alone as long as it does not go into charge mode.  This is enough to test firmware changes.
 - **Do not insert batteries while the device is powered up.**  If you were to get one backwards, it could burn out the Arduino, since backward battery test is only done right after powerup.
 - A discharged battery (less than 1.0V into 3.3 ohm load) will show the same as an empty socket
+- The sequence of update of the six channels changes every horizontal pixel (two minutes).  This is so each colour gets an equal chance when several graph occupy the same pixel.  The last one to be drawn wins.  Two lines exactly on top of each other should show alternating colour pixels.
+- Voltages higher than about 1.42V aren't shown on the graph, but still measured and tallied correctly.  This can happen when discharging non-rechargeable alkaline AA cells.
+- Times higher than 8 hours aren't shown on the graph, but still measured and tallied correctly.  This could theoretically happen with a high-enough capacity cell.
+
+# What if you discharge an Alkaline Cell?
+
+These are the discharge traces of two different brand private label alkaline AAs.
+
+![Alkaline Battery Discharge](pix/alkaline.jpg)
+
+It was for science!  From new batteries directly to the battery recycle bin.  Two conclusions here.
+
+- Private label batteries are about the same, at least these two
+- An alkaline battery has too high an ESR (equivalent series resistance) to efficiently yield its energy into 3.3 ohms.
+
+The milliamp hour tallying code wasn't as accurate at this point.  Still, according to [https://en.wikipedia.org/wiki/Alkaline_battery#Voltage](Wikipedia) at significant load an alkaline cell hits 1.0V with still about 20% energy remaining, and [https://en.wikipedia.org/wiki/AA_battery#Comparison](elsewhere on Wikipedia) it says that the rated capacity of an alkaline AA, 1800-2850mAh (presumably cheap private label ones are at the low end) is yielded at a 50mA discharge rate.  Anyhow it's clear that for high current loads, NiMH rechargeables work much better.
 
 # How it works
 ## Discharge Circuit
@@ -58,19 +74,19 @@ Modern electronics generally make it impossible for batteries to be inserted bac
 
 When the electronics are powered up, resistor R13 tries to turn on transistor Q1, which then pulls the Arduino's input pin low.  This indicates "OK".
 
-Any installed batteries will pull the transistor's base voltage lower via resistor R14, to try to turn the transistor off.  The exact turnoff voltage depends on the ratio of  R13 to R14.  100 ohms was experimentally determined to turn off the transistor, and therefore turn on the Arduino's input pin, if any battery has a voltage of about -16 millivolts or lower.  Because of the charge diodes, the lowest-voltage battery (i.e. the backward one) "wins" over the other batteries.
+Any installed batteries will draw current away from the transistor's base connection resistor R14, to try to turn the transistor off.  The exact turnoff voltage depends on the ratio of  R13 to R14.  100 ohms was experimentally determined to turn off the transistor, and therefore turn on the Arduino's input pin, if any battery has a voltage of about -16 millivolts or lower.  Because of the charge diodes, the lowest-voltage battery (i.e. the backward one) "wins" over the other batteries.
 
-It is important that the negative voltage not reach the Arduino even if the circuit is depowered and the transistor can't turn on.  This is the case because of the built-in diode action of the transistor's emitter-base junction.  In other words, a negative voltage coming in via R14 can't "pull" on the Arduino's input pin through the transistor.
-R14 can be omitted, i.e. replaced by a direct connection, if you don't mind the tester saying "Battery Backwards!" and refusing to operate when a completely dead battery (0 volts) battery is installed.  Such a battery could well be backwards and would, in that case, be damaged by trying to charge it.  In my device, with R14 at 100 ohms, a completely dead, 0 volts battery will be allowed.
+It is important that the negative voltage not reach the Arduino even if the circuit is depowered and the 22K ohm resistor does not draw current.  This is the case because of the built-in diode action of the transistor's emitter-base junction.  A negative voltage coming in via R14 can't "pull" on the Arduino's input pin through the transistor.
+R14 can be omitted, i.e. replaced by a direct connection, if you don't mind the tester saying "Battery Backwards!" and refusing to operate when a completely dead (0 volts) battery is installed.  Such a battery could well be backwards and would, in that case, be damaged by trying to reverse charge it.  In my device, with R14 at 100 ohms, a completely dead, 0 volts battery will be allowed.
 ## I2C Voltage Conversion
 The Arduino runs on 5V, whereas the LCD runs at 3.3V.  SPI is an "open collector" protocol, meaning, the logic high level is determined by a pullup resistor.  Thus it is possible, with discipline, to connect the Arduino directly to the LCD.  However, if the Arduino's internal pullup resistors are used, they will pull the logic level above 3.3V.  External pullup resistors to 3.3V would be needed.   Even then, if the Arduino actively drives the signal high, the display's maximum input voltage level will be exceeded.  Rather than deal with all that, a simple MOSFET voltage converter is used.
 [This web site](https://www.hobbytronics.co.uk/mosfet-voltage-level-converter) shows how these work.  Instead of wiring it up from scratch, a cheap 4-channel converter module is used.  The Arduino's 3.3V output is sufficient to power the converter and the LCD including backlight.
 ## Sources of Inaccuracy
 This is a device that measures something.  As such it should be built to instrument grade.  It isn't.  The relays are cheap generic ones, and the Arduino's analog-digital converter, while pretty accurate, is no multimeter.  The following sections show sources of inaccuracy and how they are dealt with.
 ### Stray Resistance
-As mentioned earlier, heavy gauge wire is used where stray resistance would throw the measurement off.  The 14 gauge wire is overkill, resulting in fractions of a milli-ohm of maximal interconnect resistance, but I had that gauge of wire available.  Regular thin hookup wire would be insufficient.
+As mentioned earlier, heavy gauge wire is used where stray resistance would throw the measurement off.  The 14 gauge wire is overkill, resulting in fractions of a milli-ohm of maximal interconnect resistance, but I had that gauge of wire handy.  Regular thin hookup wire would be insufficient.
 
-The battery holders are of a type that has very sturdy metal contact tabs.
+The battery holders are of a type that has very sturdy metal contact tabs.  The screw terminals on the relay module are tightened well.
 ### Load Resistor Accuracy
 The load resistors are supposed to be 3.3 ohms.  The Arduino needs this value for voltage-current conversions.  Are the resistors really 3.3 ohms?  It's hard to measure such a low resistance with hobbyist gear.
 
@@ -82,8 +98,8 @@ Even more important than the accuracy of the load resistors is that the channels
 
 Aside from ensuring that all the analog input pins on the Arduino read the same for the same voltage, which I did not check, and really controlling stray resistance in the wiring, the main task was to ensure the resistors are all the same.  This was done by connecting all six of them in series to a power supply before installation, and measuring the voltage across each with a multimeter.  To the extent the multimeter could tell (3 signifcant digits) they all had the same voltage drop.
 ### Analog Reference Accuracy
-The TL431 device is not instrument grade.  However in this application it produces a sufficiently accurate 2.5V reference voltage independent of the exact power supply voltage.  A better voltage reference would be overkill.
-### Conversion of ADC reading to Millivolts
+The TL431 device is not instrument grade.  However in this application it appears to be working well.  A better voltage reference would be overkill.
+### Conversion of A/D Converter reading to Millivolts
 In the firmware, the following conversion is used on the sum of 1000 analog readings:
 
 &emsp; millivolts = (100\*adc+20165) / 40330
@@ -110,8 +126,8 @@ In general, operations that lose precision are avoided for the milliamp hour and
 The list of electronic materials is at the end of the [Schematic](../schematic/battery-tester.pdf).
 Other materials used to build the device as shown in the photos were:
 
-- 18x12cm Prototyping board with copper pads
-- About 80cm of 14-gauge copper wire (obtain by stripping the insulated part of normal house wiring - the bare coppper earth wire is a lesser gauge)
+- Prototyping board, 18x12cm with copper pads
+- About 80cm of 14-gauge copper wire (from a stripped scrap of house wiring cable)
 - About 30cm of foam double-sided adhesive tape
 - Electrical tape
 - Insulated hookup wire (from a stripped twisted pair cable such as Cat5)
@@ -120,9 +136,10 @@ Other materials used to build the device as shown in the photos were:
 
 ## Tools
 Tools to construct the device as shown were
+
 - Good quality temperature regulated soldering iron with a reasonably fine tip
 - Solder sucker or solder wick braid to fix soldering errors
-- Dremel tool with a 1/16" milling bit (sort of optional - won't look as good if you improvise with a drill)
+- Dremel tool with a 1/16" milling bit (optional - makes nice looking holes for the battery contacts)
 - Wirewrap gun (optional)
 - Needlenose pliers
 - Wire cutter
@@ -137,9 +154,9 @@ First of all, test the high-pincount parts on a breadboard before soldering them
 
 I also found after installation that one of the relay module channels didn't work.  It turns out that the LED indicators on there are needed to function, and one of them was damaged.  The small resistor added to bypass that can be seen in the photos.  But if I'd noticed earlier, the dead channel would have been the unused 8th relay (as it was in my breadboard tests).
 
-Battery holders mounted.  I routed slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.  Considering how I want to control stray resistance here, the very heavy duty tabs (take a real effort to bend and real force to insert the batteries) are just the ticket here.
+Battery holders mounted.  I milled slots into the proto board using the dremel tool, bent the tabs straight and passed them through.  Without the dremel tool and suitable bit, the slots could be made by just drilling a few extra holes and nibbling out the space between them with a wire cutter.  Even large round holes, while cosmetically less nice, would work just as well.  Considering how I want to control stray resistance here, the very heavy duty tabs (take a real effort to bend and real force to insert the batteries) are just the ticket.
 
-Note the very heavy ground wire.  I ran it a round in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: a small fraction of a milli-ohm).
+Note the very heavy ground wire.  I ran it around in a loop to further reduce the resistance between the load resistors and the negative battery terminals (total resistance: a small fraction of a milli-ohm).
 
 ![Assembly Photo 1](pix/assembly1.jpg)
 
@@ -147,7 +164,7 @@ Next, cover the part where the relay modules will go with two layers of electric
 
 ![Assembly Photo 2](pix/assembly2.jpg)
 
-Mount the relay banks (one bank of eight would be better) using two layers of double-sided adhesive foam tape.  They won't come off due to the stiffness of the heavy wires that will be added.  Here we already have the connections to the positive battery terminals.
+Mount the relay banks (one bank of eight would be better) using two layers of double-sided adhesive foam tape.  They won't come off due to the stiffness of the heavy wires that will be added.  Here we already have the connections to the positive battery terminals.  They should be high enough that the stuff sticking out of the bottom won't make contact with the copper on the prototyping board.
 
 ![Assembly Photo 3](pix/assembly3.jpg)
 
@@ -167,7 +184,7 @@ And connected to the "normally closed" relay terminals at one end, and the charg
 
 ![Assembly Photo 7](pix/assembly7.jpg)
 
-What could affect the measurement is the ground connection to the Arduino.  Both ground pins are used.  There is no need for the heavy wire here, because the wire runs are very short, and the Arduino and its connected gadgets don't use very much power.
+What could affect the measurement is the ground connection to the Arduino.  Both ground pins are used.  There is no need for the heavy wire here, because the wire runs are very short, and the Arduino and its connected gadgets don't draw very much current.  However if the gadget is powered via USB, the current to activate all the relays flows through these wires.  To take real measurements, power it through the AC adapter.
 
 ![Assembly Photo 8](pix/assembly8.jpg)
 
@@ -188,6 +205,6 @@ The power resistors get fairly hot.  They are in two groups; first all the charg
 
 8 Relay Bank - I built it with two 4 relay modules because that's what I had on hand.  But using one 8 relay module would save a little bit of space and two interconnect wires.
 
-Maybe use a bigger display.  The 1.3" one clearly communicates its information but at my age, at least, it's squinty.
+Maybe use a bigger display.  The very cheap 1.3" one clearly communicates its information but at my age, at least, it's squinty.
 
 Wifi... Just kidding.  This device does not need internet access!  It's a self-contained appliance. If you want a record of what it measured, take a picture with your phone - and be sure to include the battery holders so you can record what batteries produced the readings.  If you need data logging, add some print statements and record the discharge run using the USB/serial connection.
