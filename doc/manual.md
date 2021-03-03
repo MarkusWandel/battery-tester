@@ -99,8 +99,8 @@ The division is done like this to divide by 403.3 with exact rounding and still 
 In theory the divisor should be 1023/2.5 = 409.2; however 403.3 was determined experimentally with a potentiometer, with the 2.5V analog reference built but no load resistors connected yet.
 
 In practice, checking battery voltage with a multimeter and comparing to the voltage shown on the device (with two decimal places) I find the accuracy to be within +/- 1%.
-### Electrical and A/D Converter Noise
-Each voltage 1000 times per second tick and averaged.  The 1000 readings are interleaved between channels to space the readings out evenly over most of a second.  It was not tested whether this (having the A/D converter input constantly switching channels) is, in fact, less noisy than doing each batch of 1000 reads separately.
+### Electrical and Ais read /D Converter Noise
+Each voltage is read 1000 times per second tick and averaged.  The 1000 readings are interleaved between channels to space the readings out evenly over most of the second.  It was not tested whether this (having the A/D converter input constantly switching channels) is, in fact, less noisy than doing each batch of 1000 reads separately.
 
 ### Fixed-Point Arithmetic
 The firmware uses only integer arithmetic.  If sub-integer precision is required, the units are changed instead.  For example to get volts with two decimal places, a "centivolt" unit is used.

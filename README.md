@@ -17,8 +17,6 @@ The operation commences 15 seconds after powerup or the last button press.
 
 Batteries that are detected are then discharged.  While discharging, the accumulated milliamp hours and watt hours are continously updated, as is a graph of voltage against time.  When a battery's voltage goes below 1.0 volt, the discharge of that battery stops and the discharge time, watt hours and milliamp hours are held.
 
-During discharge, the button can be pressed to replace the watt hour counts with the current voltages.  The test will not be affected; nothing will stop it except powerdown or removal of the battery.
+During discharge, the button can be pressed to replace the watt hour counts with the current voltages.  The test will not be affected.
 
 Generally a high-capacity NiMH in good condition will take 6-8 hours to fully discharge.  This is a compromise between discharge rate (lower would be better) and test time (should complete overnight)
-
-If any battery is inserted backwards, the tester will detect this and refuse to operate.
