@@ -35,7 +35,7 @@ The discharge loop wiring needs to be as low resistance as possible, so the load
 
 The analog input pins on the Arduino draw immeasurably small current so a thin wire can be used to hook them up.
 
-A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors burn 6\*1.2\*1.2/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time and wirewound power resistors are built to take the heat.
+A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors burn 6\*1.2<sup>2</sup>/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time and wirewound power resistors are built to take the heat.
 
 ## Reference Voltage for A/D conversion
 The Arduino's analog-digital converter outputs a value of 0 if the analog input is at ground level, and a value of 1023 if the analog input is at the analog reference level.  Without anything connected to the AREF pin this defaults to the supply voltage.  However, the supply voltage isn't necessarily very precise, only having to be within +/- 10% of 5V.  For exact measurement, a precisely regulated analog reference voltage is required.
