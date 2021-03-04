@@ -233,6 +233,7 @@ void setup() {
   start_time = millis();
 }
 
+
 // Software debounce and timer for the button (long vs. short press)
 int prev_button_state = 0;
 int button_state = 1;
@@ -371,6 +372,13 @@ void loop() {
 
       // This focus on eliminating noise, both in software and in hardware, gives sharp graph lines
       // and also more reliable milliamp hour readings.
+
+      // Note that we do one ring buffer entry per pass through loop().  As this
+      // theoretically takes around 120/10K = 12 milliseconds, this won't cause significant
+      // jitter in the 1-second ticks and still, as long as 50*.012=0.6 seconds are availabe
+      // between the 1 second processing runs the whole ring buffer will be updated.  Even if
+      // it wasn't, e.g. only 3/4 of the ring buffer was updated, it would still be a meaningful
+      // running average.
 
       // Zero out the current ring buffer entries
       for(int i=0;i<6;i++) analog_ringbuf[analog_ringbuf_ptr][i] = 0;
