@@ -73,6 +73,10 @@ The Arduino runs on 5V, whereas the LCD runs on 3.3V.  While it is possible to d
 A simple MOSFET circuit described on [this web site](https://www.hobbytronics.co.uk/mosfet-voltage-level-converter) shows how to convert SPI logic levels, with 5V pullups on the 5V side and 3.3V pullups on the 3.3V side.  Four of these are on the level converter module used here.
 ## Sources of Inaccuracy
 This is a device that measures something.  While it works pretty well (+/- 1% or so) it is not a precision instrument.
+### Clock Accuracy
+All battery capacity measurements rely on the Arduino's built-in timebase (the millis() function).  This was tested by watching the charge countdown timer, and comparing to a known accurate clock (computer synchronized by NTP) exactly one hour apart.  In that time, the Arduino's clock had gained approximately 3.5 seconds.  This means it's running 0.1% fast.
+
+A correction was implemented by dividing millis() by 1001 instead of 1000 to obtain the seconds.  A retest showed the Arduino t o run a bit less than one second slow in an hour.  The accuracy is now 1/3600 = 0.03%, at least at the temperature the clock crystal was at the time.
 ### Stray Resistance
 Heavy wire is used where stray resistance would throw the measurement off.
 
@@ -86,9 +90,9 @@ It was not tested whether hot resistors have higher resistance than cold ones.
 ### Consistency between Channels
 Even more important than the accuracy of the load resistors is that they all match.  The main point of this device is to find matching sets of batteries.
 
-Before installation, all six resistors were connected in series to a power supply and the voltage across each was measured.  They matched within 0.1%.
+Before installation, all six resistors were connected in series to a power supply and the voltage across each was measured.  They matched within the multimeter's display resolution, which was about 0.3% in this case.
 ### Analog Reference Accuracy
-The TL431 device is not instrument grade.  It works well enough for this application.  The 10μF filter capacitor on its output was necessary on a breadboard test and retained for the build.
+The TL431 device is not instrument quality.  It works well enough for this application.  The 10μF filter capacitor on its output was necessary on a breadboard test and retained for the build.
 ### Conversion of A/D Converter reading to Millivolts
 In the firmware, the following conversion is used on the sum of 1000 analog readings:
 
@@ -99,10 +103,10 @@ The division is done like this to divide by 403.3 with correct rounding and stil
 In theory the divisor should be 1023/2.5 = 409.2; however 403.3 was determined experimentally with a potentiometer, with the 2.5V analog reference built but no load resistors connected yet.
 
 In practice, checking battery voltage with a multimeter and comparing to the voltage shown on the device (with two decimal places) I find the accuracy to be within +/- 1%.
-### Electrical and Ais read /D Converter Noise
+### Electrical and A/D Converter Noise
 Each voltage is read 1000 times per second tick and averaged.  The 1000 readings are interleaved between channels to space the readings out evenly over most of the second.  It was not tested whether this (having the A/D converter input constantly switching channels) is, in fact, less noisy than doing each batch of 1000 reads separately.
 
-### Fixed-Point Arithmetic
+### Arithmetic Precision
 The firmware uses only integer arithmetic.  If sub-integer precision is required, the units are changed instead.  For example to get volts with two decimal places, a "centivolt" unit is used.
 
 Division is done as follows:

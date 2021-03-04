@@ -10,6 +10,10 @@
 // Initialize Adafruit ST7789 TFT library
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
+// If the Arduino's clock is off, adjust the divisor here.  This setting compensates
+// for one that runs 0.1% fast.
+#define MILLIS_PER_SECOND 1001
+
 //  ST77XX colours are in 5/6/5 bit R/G/B format.  Want a couple of shades of grey
 //
 //  00100 001000 00100
@@ -273,7 +277,7 @@ void loop() {
       prev_button_state = button_state;
    }
 
-   unsigned long secs = time_since(start_time) / 1000;
+   unsigned long secs = time_since(start_time) / MILLIS_PER_SECOND;
 
    if(state == S_CONFIG) {
       if(secs < CONFIG_TIMEOUT) {
