@@ -5,7 +5,7 @@
 
 - **Do not power device using USB and wall adapter at the same time**  since both are connected to the same 5V rail.  The device will work on USB power alone except for charge mode.  The accuracy may be slightly reduced on USB power.
 - **Do not insert batteries while the device is powered up.**  The backward battery test is only done at startup.
-- A discharged battery (less than 1.0V into 3.3 ohm load at the start) will show as an empty socket
+- A discharged battery (less than 1.0V into 3.3Ω load at the start) will show as an empty socket
 - The update sequence of the six channels changes every two minutes.  This is intentional to mix colours on the graph if graph lines coincide.
 - Voltages higher than about 1.4V aren't shown on the graph.  You can press the button to obtain a voltage reading.
 - After 8 hours the graph is full, but if the run continues it is still measured and tallied correctly.
@@ -42,7 +42,7 @@ The Arduino's analog-digital converter outputs 0 if the analog input is at groun
 
 ![Analog Reference Circuit](pix/aref.jpg)
 
-A TL431 is used as it is commonly found in switching power supplies.  As connected here, it produces 2.5V.  The analog readings were still noisy in a breadboard test until the 10 microfarad capacitor was added.
+A TL431 is used as it is commonly found in switching power supplies.  As connected here, it produces 2.5V.  The analog readings were still noisy in a breadboard test until the 10μF capacitor was added.
 
 The analog resolution is about 2.5V/1023 = 2.44mV per A/D converter step.  This is adequate for this application; however with a lower reference voltage (1.6V) the resolution would be higher.
 ## Trickle Charging
@@ -54,11 +54,11 @@ The trickle charge in this tester is meant to top up a fast-charged battery, not
 
 ![Charging Circuit](pix/charge.jpg)
 
-The charge relay is shown in the "active" position and the battery relay in the "inactive" position.  Current flows through the diode and the 22 ohm resistor to charge the battery.  Without the diode, all batteries not being discharged would be connected in parallel.  With the diode, current can only flow "into" the battery, not out of it, so none can flow from one battery to another.
+The charge relay is shown in the "active" position and the battery relay in the "inactive" position.  Current flows through the diode and the 22Ω resistor to charge the battery.  Without the diode, all batteries not being discharged would be connected in parallel.  With the diode, current can only flow "into" the battery, not out of it, so none can flow from one battery to another.
 
 With the 5 volt supply minus approximately 1.5 volts on a battery being charged, the current is 3.5V/22Ω = 159mA.  Batteries of less than 1590mAh capacity can still be topped up, just not too long.  The 2 or 4 hour topup setting is recommeded in this case.
 
-The charging circuitry is wasteful in that 3.5/5 = 70% of the charge energy is just turned into heat by the 22 ohm resistor, for about 3.5V\*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch at 6\*0.56 = 3.36W of heat being generated continuously and a wirewound resistor is built to take the heat.
+The charging circuitry is wasteful in that 3.5/5 = 70% of the charge energy is just turned into heat by the 22Ω resistor, for about 3.5V\*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch at 6\*0.56 = 3.36W of heat being generated continuously and a wirewound resistor is built to take the heat.
 ## Reverse Polarity Detection
 To obtain precise readings, the batteries are connected directly to the Arduino's analog input pins in discharge mode.  If this were to occur with a battery accidentally inserted backwards, the analog input pin would burn out.  The following circuit guards against accidental damage.
 
@@ -68,7 +68,7 @@ Resistor R13 tries to turn on transistor Q1, which then pulls the Arduino's inpu
 
 Any installed batteries will draw current away from the transistor's base connection through resistor R14, to try to turn the transistor off and the Arduino input on, which indicates "Danger, do not turn on discharge relays".  The threshold voltage depends on the ratio of R13 to R14.  100 ohms was experimentally determined to turn off the transistor at about -16 millivolts on the lowest-voltage battery.
 ## I2C Voltage Conversion
-The Arduino runs on 5V, whereas the LCD runs at 3.3V.  While it is possible to directly wire SPI between incompatbile voltage levels, a programming error (drive the Arduino pin to logic high as opposed to letting it be pulled to 3.3V via a pullup resistor) could damage the LCD.
+The Arduino runs on 5V, whereas the LCD runs on 3.3V.  While it is possible to directly wire SPI between incompatbile voltage levels, a programming error (drive the Arduino pin to logic high as opposed to letting it be pulled to 3.3V via a pullup resistor) could damage the LCD.
 
 A simple MOSFET circuit described on [this web site](https://www.hobbytronics.co.uk/mosfet-voltage-level-converter) shows how to convert SPI logic levels, with 5V pullups on the 5V side and 3.3V pullups on the 3.3V side.  Four of these are on the level converter module used here.
 ## Sources of Inaccuracy
@@ -88,13 +88,13 @@ Even more important than the accuracy of the load resistors is that they all mat
 
 Before installation, all six resistors were connected in series to a power supply and the voltage across each was measured.  They matched within 0.1%.
 ### Analog Reference Accuracy
-The TL431 device is not instrument grade.  It works well enough for this application.  The 10 microfarad filter capacitor on its output was necessary on a breadboard test and retained for the build.
+The TL431 device is not instrument grade.  It works well enough for this application.  The 10μF filter capacitor on its output was necessary on a breadboard test and retained for the build.
 ### Conversion of A/D Converter reading to Millivolts
 In the firmware, the following conversion is used on the sum of 1000 analog readings:
 
 &emsp; millivolts = (100\*adc+20165) / 40330
 
-The division is done like this to divide by 403.3 with exact rounding and still remain readable.
+The division is done like this to divide by 403.3 with correct rounding and still remain readable.
 
 In theory the divisor should be 1023/2.5 = 409.2; however 403.3 was determined experimentally with a potentiometer, with the 2.5V analog reference built but no load resistors connected yet.
 
@@ -105,7 +105,7 @@ Each voltage is read 1000 times per second tick and averaged.  The 1000 readings
 ### Fixed-Point Arithmetic
 The firmware uses only integer arithmetic.  If sub-integer precision is required, the units are changed instead.  For example to get volts with two decimal places, a "centivolt" unit is used.
 
-When something needs dividing by something else, it is done like this:
+Division is done as follows:
 
 &emsp; Result = (Input + Divisor/2) / Divisor
 
@@ -162,7 +162,7 @@ In this picture the connections to the positive battery terminals are already ma
 
 ![Assembly Photo 3](pix/assembly3.jpg)
 
-The 3.3 ohm load resistors are mounted.
+The 3.3Ω load resistors are mounted.
 
 ![Assembly Photo 4](pix/assembly4.jpg)
 
@@ -170,7 +170,7 @@ And connected to the "normally open" terminals on the relays at one end, and the
 
 ![Assembly Photo 5](pix/assembly5.jpg)
 
-The 22 ohm charge resistors are mounted.
+The 22Ω charge resistors are mounted.
 
 ![Assembly Photo 6](pix/assembly6.jpg)
 
@@ -186,7 +186,7 @@ Top side component view.  This is after the first overnight test run.  The rever
 
 ![Assembly Photo 9](pix/assembly9.jpg)
 
-Bottom wiring.  Noncritical connections are wirewrapped since I happen to have wirewrap stuff.
+Bottom wiring.  Noncritical connections are wirewrapped.
 
 The power adapter is directly attached.  Otherwise plugging in the wrong type would burn out the Arduino.  Its AVR328 chip runs directly off the power adapter's regulated 5V.
 ![Assembly Photo 10](pix/assembly10.jpg)
