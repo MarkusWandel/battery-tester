@@ -29,34 +29,34 @@ This is the important circuit of the tester.
 
 ![Discharge Circuit](pix/discharge.jpg)
 
-Every connection shown, except as noted, is made of very heavy (14 gauge copper) wire to eliminate any change of stray resistance throwing off the measurement.  If there is extra resistance to either terminal of the battery holder, including in the relay, or in the Arduino's ground connection, the Arduino will see a lower voltage than at the battery.
+Every connection shown, except as noted, is made of very heavy (14 gauge copper) wire to eliminate stray resistance.  If there is extra resistance to either terminal of the battery holder, including in the relay, or in the Arduino's ground connection, the Arduino will see a lower voltage than at the battery.
 
-The discharge loop wiring needs to be as low resistance as possible, so the load resistance on the battery really is 3.3 ohms and not more.  The firmware in the Arduino uses 3.3 ohms when converting voltage to current for displaying milliamp hours and watt hours.
+The discharge loop wiring needs to be as low resistance as possible, so the load resistance really is 3.3 ohms and not more.  The firmware in the Arduino uses 3.3 ohms when converting voltage to current for displaying milliamp hours and watt hours.
 
 The analog input pins on the Arduino draw immeasurably small current so a thin wire can be used to hook them up.
 
-A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors burn 6\*1.2<sup>2</sup>/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time and wirewound power resistors are built to take the heat.
+A NiMH cell under load has a nominal output voltage of 1.2V.  The six discharge resistors dissipate 6\*1.2<sup>2</sup>/3.3 = 2.6W while doing the discharge test.  The 0.44W per resistor is far below the rated capacity of the 5W wirewound resistors, but still, they get almost too hot to touch over time and wirewound power resistors are built to take the heat.
 
 ## Reference Voltage for A/D conversion
-The Arduino's analog-digital converter outputs a value of 0 if the analog input is at ground level, and a value of 1023 if the analog input is at the analog reference level.  Without anything connected to the AREF pin this defaults to the supply voltage.  However, the supply voltage isn't necessarily very precise, only having to be within +/- 10% of 5V.  For exact measurement, a precisely regulated analog reference voltage is required.
+The Arduino's analog-digital converter outputs 0 if the analog input is at ground level, and a 1023 if the analog input is at the analog reference level.  With nothing connected to the AREF pin this defaults to the supply voltage.  However, the supply voltage, which also powers the relays, isn't very precise, only having to be within +/- 10% of 5V.  For exact measurement, a precisely regulated analog reference voltage is required.
 
 ![Analog Reference Circuit](pix/aref.jpg)
 
-A TL431 is used as it is commonly found in switching power supplies.  As connected here, it produces 2.5V.  The analog readings were still noisy with this configuration in a breadboard test, so the 10 microfarad capacitor was added.
+A TL431 is used as it is commonly found in switching power supplies.  As connected here, it produces 2.5V.  The analog readings were still noisy in a breadboard test until the 10 microfarad capacitor was added.
 
-The analog resolution is about 2.44mV per A/D converter step.  This is adequate for this application; however with a lower reference voltage (1.6V) the resolution would be higher.
+The analog resolution is about 2.5V/1023 = 2.44mV per A/D converter step.  This is adequate for this application; however with a lower reference voltage (1.6V) the resolution would be higher.
 ## Trickle Charging
-A fast charger can't guarantee to top up the batteries to exactly 100% full.  Trickle charging can.
+Becaue it has to terminate the high charge current when it thinks the battery is full, a fast charger can't guarantee to get the batteries exactly 100% charged.  Trickle charging can.
 
-Trickle charging is defined as a rate of C/10 or less, where C is the capacity of the battery.  So for example a 2800mAh battery can be trickle charged at 280mA.  Trickle charging does not need to stop at 100% full and can be left on longer.  Most cheap overnight chargers work this way.
+Trickle charging is defined as a rate of C/10 or less, where C is the capacity of the battery.  So for example a 2800mAh battery can be trickle charged at 280mA.  Trickle charging does not need to stop at 100% full and can be left on longer.  Cheap overnight chargers work this way.
 
 The trickle charge in this tester is meant to top up a fast-charged battery, not charge it from empty.
 
 ![Charging Circuit](pix/charge.jpg)
 
-The charge relay is shown in the "active" position and the battery relay in the "inactive" position.  Current flows through the diode and the 22 ohm resistor to charge the battery.  The diode exists because otherwise all batteries not being discharged would be connected in parallel.  With the diode, current can only flow "into" the battery, not out of it.
+The charge relay is shown in the "active" position and the battery relay in the "inactive" position.  Current flows through the diode and the 22 ohm resistor to charge the battery.  Without the diode, all batteries not being discharged would be connected in parallel.  With the diode, current can only flow "into" the battery, not out of it, so none can flow from one battery to another.
 
-With the 5 volt supply minus approximately 1.5 volts on a battery being charged, the current is 3.5V/22ohm = 159mA.  Batteries of less than 1590mAh capacity can still be topped up, just not too long.  The 2 or 4 hour topup setting is recommeded in this case.
+With the 5 volt supply minus approximately 1.5 volts on a battery being charged, the current is 3.5V/22Ω = 159mA.  Batteries of less than 1590mAh capacity can still be topped up, just not too long.  The 2 or 4 hour topup setting is recommeded in this case.
 
 The charging circuitry is wasteful in that 3.5/5 = 70% of the charge energy is just turned into heat by the 22 ohm resistor, for about 3.5V\*0.159A = 0.56 watts per resistor.  This is far below the rated capacity of the 5W wirewound resistors, however they still get almost too hot to touch at 6\*0.56 = 3.36W of heat being generated continuously and a wirewound resistor is built to take the heat.
 ## Reverse Polarity Detection
