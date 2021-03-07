@@ -10,6 +10,12 @@
 - Voltages higher than about 1.4V aren't shown on the graph.  You can press the button to obtain a voltage reading.
 - After 8 hours the graph is full, but if the run continues it is still measured and tallied correctly.
 
+# Battery Rejuvenation?
+
+A couple of "Ray-O-Vac Platinum" cells of stated 2100mAh capacity, that had not been used in years, yielded only 937 and 949 mAh.  But charged up a second time and retested, they yielded 1516 and 1457mAh.  A third cycle showed no further improvement.
+
+All other batteries, most them also not charged in 5 years or more, yielded 60-90% of their stated capacity on the first try (fast charge, then 8h trickle topup).
+
 # What if you discharge an Alkaline Cell?
 
 These are the discharge traces of two different brand private label alkaline AAs.  The traces look pretty similar.  Watt hours aren't shown and the milliamp hours are less accurate because this test was done with an early version of the firmware.
@@ -195,7 +201,7 @@ Bottom wiring.  Noncritical connections are wirewrapped.
 The power adapter is directly attached.  Otherwise plugging in the wrong type would burn out the Arduino.  Its AVR328 chip runs directly off the power adapter's regulated 5V.
 ![Assembly Photo 10](pix/assembly10.jpg)
 
-Finally, the whole thing is enclosed in a crude wooden box to protect the wiring underneath.
+Finally, the whole thing is enclosed in a crude wooden box to protect the wiring underneath.  For now, no notch to access the USB connector.  Firmware updates can be done through the 6-pin ISP connector just as well.
 ![Assembly Photo 11](pix/assembly11.jpg)
 
 ## What I Would Do Differently Next Time
