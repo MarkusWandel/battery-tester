@@ -76,7 +76,7 @@ This is a device that measures something.  While it works pretty well (+/- 1% or
 ### Clock Accuracy
 All battery capacity measurements rely on the Arduino's built-in timebase (the millis() function).  This was tested by watching the charge countdown timer, and comparing to a known accurate clock (computer synchronized by NTP) exactly one hour apart.  In that time, the Arduino's clock had gained approximately 3.5 seconds.  This means it's running 0.1% fast.
 
-A correction was implemented by dividing millis() by 1001 instead of 1000 to obtain the seconds.  A retest showed the Arduino t o run a bit less than one second slow in an hour.  The accuracy is now 1/3600 = 0.03%, at least at the temperature the clock crystal was at the time.
+A correction was implemented by dividing millis() by 1001 instead of 1000 to obtain the seconds.  A retest showed the Arduino to run a bit less than one second slow in an hour.  The accuracy is now 1/3600 = 0.03%, at least at the temperature the clock crystal was at the time.
 ### Stray Resistance
 Heavy wire is used where stray resistance would throw the measurement off.
 
@@ -119,7 +119,7 @@ Aside from the initial millivolt calculation, division operations are avoided fo
 # Construction
 ## Materials
 The list of electronic materials is at the end of the [Schematic](../schematic/battery-tester.pdf).
-Other materials used to build the device as shown were:
+Other materials used to build the device as shown (except for the wooden box) were:
 
 - Prototyping board, 18x12cm with copper pads
 - About 80cm of 14-gauge copper wire (from a stripped scrap of house wiring cable)
@@ -130,7 +130,7 @@ Other materials used to build the device as shown were:
 - Solder
 
 ## Tools
-Tools to construct the device as shown were
+Tools to construct the device were
 
 - Temperature regulated soldering iron with a fine tip
 - Solder sucker or solder wick braid to fix soldering errors
@@ -194,6 +194,9 @@ Bottom wiring.  Noncritical connections are wirewrapped.
 
 The power adapter is directly attached.  Otherwise plugging in the wrong type would burn out the Arduino.  Its AVR328 chip runs directly off the power adapter's regulated 5V.
 ![Assembly Photo 10](pix/assembly10.jpg)
+
+Finally, the whole thing is enclosed in a crude wooden box to protect the wiring underneath.
+![Assembly Photo 11](pix/assembly11.jpg)
 
 ## What I Would Do Differently Next Time
 The power resistors get fairly hot.  They should be interleaved to alternate charge and load resistors to spread the heat out more.  They should be elevated above the board a bit by making their leads longer, for better air circulation.
