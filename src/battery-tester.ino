@@ -10,6 +10,8 @@
 // Initialize Adafruit ST7789 TFT library
 Adafruit_ST7789 tft = Adafruit_ST7789(TFT_CS, TFT_DC, TFT_RST);
 
+#define VERSION_STR "v1.01"
+
 // If the Arduino's clock is off, adjust the divisor here.  This setting compensates
 // for one that runs 0.1% fast.
 #define MILLIS_PER_SECOND 1001
@@ -167,6 +169,37 @@ void print_options() {
 }
 
 //-----------------------------------------------------------------------------
+// Before activating any relays, check for reverse voltage.  Since the Arduino's
+// analog inputs are connected directly to the battery load resistors, activating
+// a discharge relay with a reverse connected battery would immediately burn out
+// the analog input pin.
+
+void check_polarity() {
+  if(digitalRead(REVERSE_VOLT_PIN)) {
+     // Just indicate reverse voltage and stop.
+     tft.fillScreen(ST77XX_RED);
+     tft.setTextSize(3);
+     tft.setCursor(0,100);
+     tft.setTextColor(ST77XX_WHITE);
+     tft.print("   Battery\n  Backwards!");
+
+//     Uncomment this to test the backwards battery detector.  Once triggered, the screen
+//     will turn green for OK, red for not OK
+//
+//     int rv = 1;
+//     for(;;) {
+//        int rn = digitalRead(REVERSE_VOLT_PIN);
+//        if(rv != rn) {
+//           tft.fillScreen(rn?ST77XX_RED:ST77XX_GREEN);
+//           rv = rn;
+//        }
+//     }
+
+     for(;;) { }  // freeze here
+  }
+}
+
+//-----------------------------------------------------------------------------
 // Debug printf for the serial monitor.  p(...) is about equivalent to
 // fprintf(STDERR,...) when debugging in a Unix environment.  The actual
 // serial operations are commented out by default.
@@ -195,37 +228,9 @@ void setup() {
   tft.setRotation(2);
   tft.setTextWrap(false);
 
-  // Before activating any relays, check for reverse voltage.  Since the Arduino's
-  // analog inputs are connected directly to the battery load resistors, activating
-  // a discharge relay with a reverse connected battery would immediately burn out
-  // the analog input pin.
-
   pinMode(REVERSE_VOLT_PIN,INPUT_PULLUP);
-
   delay(200); // Wait 1/5 second to make sure everything is stable
-
-  if(digitalRead(REVERSE_VOLT_PIN)) {
-     // Just indicate reverse voltage and stop.
-     tft.fillScreen(ST77XX_RED);
-     tft.setTextSize(3);
-     tft.setCursor(0,100);
-     tft.setTextColor(ST77XX_WHITE);
-     tft.print("   Battery\n  Backwards!");
-
-//     Uncomment this to test the backwards battery detector.  Once triggered, the screen
-//     will turn green for OK, red for not OK
-//
-//     int rv = 1;
-//     for(;;) {
-//        int rn = digitalRead(REVERSE_VOLT_PIN);
-//        if(rv != rn) {
-//           tft.fillScreen(rn?ST77XX_RED:ST77XX_GREEN);
-//           rv = rn;
-//        }
-//     }
-
-     for(;;) { }  // freeze here
-  }
+  check_polarity();
 
   // Set up the "options" state
   
@@ -291,6 +296,8 @@ void loop() {
             char msg[40];
             sprintf(msg,"Start in %d seconds",CONFIG_TIMEOUT-secs);
             tft.print(msg);
+            tft.setCursor(210,230);
+            tft.print(VERSION_STR);
             state_seconds = secs;
          }
       } else {
@@ -324,9 +331,13 @@ void loop() {
 
             if(do_discharge) {
 
-               // Discharging is selected.  Turn on the discharge relays for
-               // all six channels (up to this point, we don't actually know
-               // which channels have a battery connected)
+               // Discharging is selected.  Recheck polarity to be absolutely sure we don't burn
+               // out an ADC pin by turning on a battery relay
+
+               check_polarity();
+
+               // Turn on the discharge relays for all six channels
+               // (up to this point, we don't actually know which channels have a battery connected)
 
                for(int i=0; i<6; i++) {
                   millivolt_seconds[i] = 0;
