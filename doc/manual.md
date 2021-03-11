@@ -52,7 +52,7 @@ A TL431 is used as it is commonly found in switching power supplies.  As connect
 
 The analog resolution is about 2.5V/1023 = 2.44mV per A/D converter step.  This is adequate for this application; however with a lower reference voltage (1.6V) the resolution would be higher.
 ## Trickle Charging
-Becaue it has to terminate the high charge current when it thinks the battery is full, a fast charger can't guarantee to get the batteries exactly 100% charged.  Trickle charging can.
+Because it has to terminate the high charge current when it thinks the battery is full, a fast charger can't guarantee to get the batteries exactly 100% charged.  Trickle charging can.
 
 Trickle charging is defined as a rate of C/10 or less, where C is the capacity of the battery.  So for example a 2800mAh battery can be trickle charged at 280mA.  Trickle charging does not need to stop at 100% full and can be left on longer.  Cheap overnight chargers work this way.
 
@@ -132,6 +132,7 @@ Other materials used to build the device as shown (except for the wooden box) we
 - About 30cm of foam double-sided adhesive tape
 - Electrical tape
 - Insulated hookup wire (from a stripped twisted pair cable such as Cat5)
+- Heavy hookup wire for charge circuit, e.g. from a junked PC power supply
 - Wirewrap wire (optional)
 - Solder
 
