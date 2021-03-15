@@ -10,12 +10,6 @@
 - Voltages higher than about 1.4V aren't shown on the graph.  You can press the button to obtain a voltage reading.
 - After 8 hours the graph is full, but if the run continues it is still measured and tallied correctly.
 
-# Battery Rejuvenation?
-
-A couple of "Ray-O-Vac Platinum" cells of stated 2100mAh capacity, that had not been used in years, yielded only 937 and 949 mAh.  But charged up a second time and retested, they yielded 1516 and 1457mAh.  A third cycle showed no further improvement.
-
-All other batteries, most them also not charged in 5 years or more, yielded 60-90% of their stated capacity on the first try (fast charge, then 8h trickle topup).
-
 # What if you discharge an Alkaline Cell?
 
 These are the discharge traces of two different brand private label alkaline AAs.  The traces look pretty similar.  Watt hours aren't shown and the milliamp hours are less accurate because this test was done with an early version of the firmware.
